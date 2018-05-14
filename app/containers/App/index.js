@@ -9,25 +9,39 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 import { Switch, Route } from 'react-router-dom';
 
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
+import NumbersQuiz from 'containers/NumbersQuiz/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
 
+const greenTheme = {
+  primary: '#32CD32',
+  bg: '#000'
+}
+
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   min-height: 100%;
-  padding: 0 16px;
   flex-direction: column;
+`;
+
+const BodyWrapper = styled.div`
+  max-width: calc(768px + 16px * 2);
+  padding: 0 16px;
+  display: flex;
+  margin: 0 auto;
 `;
 
 export default function App() {
   return (
+    <ThemeProvider theme={greenTheme}>
     <AppWrapper>
       <Helmet
         titleTemplate="%s | Ted Tools"
@@ -36,12 +50,16 @@ export default function App() {
         <meta name="description" content="Tech Tools by Ted" />
       </Helmet>
       <Header />
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/features" component={FeaturePage} />
-        <Route path="" component={NotFoundPage} />
-      </Switch>
+      <BodyWrapper>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/features" component={FeaturePage} />
+          <Route path="/numbers-quiz" component={NumbersQuiz} />
+          <Route path="" component={NotFoundPage} />
+        </Switch>
+      </BodyWrapper>
       <Footer />
     </AppWrapper>
+    </ThemeProvider>
   );
 }

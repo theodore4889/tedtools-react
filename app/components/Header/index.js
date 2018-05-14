@@ -5,16 +5,17 @@ import A from './A';
 import Img from './Img';
 import NavBar from './NavBar';
 import HeaderLink from './HeaderLink';
-//import Banner from './banner.jpg';
+import Logo from './logo.png';
 import messages from './messages';
 
 class Header extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
       <div>
-        <A href="https://twitter.com/mxstbr">
-        </A>
         <NavBar>
+          <A href="/">
+            <Img src={Logo} alt="Ted Tools - Logo" />
+          </A>
           <HeaderLink to="/">
             <FormattedMessage {...messages.home} />
           </HeaderLink>

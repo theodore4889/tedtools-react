@@ -7,8 +7,12 @@ import { defineMessages } from 'react-intl';
 
 export default defineMessages({
   header: {
-    id: 'tedtools.containers.FeaturePage.header',
-    defaultMessage: 'Features',
+    id: 'tedtools.containers.NumbersQuiz.header',
+    defaultMessage: 'Numbers Quiz',
+  },
+  subtitle: {
+    id: 'tedtools.containers.NumbersQuiz.subtitle',
+    defaultMessage: 'Select language, click speaker icon to listen, and guess number',
   },
   scaffoldingHeader: {
     id: 'tedtools.containers.FeaturePage.scaffolding.header',

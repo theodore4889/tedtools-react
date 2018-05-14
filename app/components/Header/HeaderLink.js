@@ -15,11 +15,11 @@ export default styled(Link)`
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: bold;
   font-size: 16px;
-  border: 2px solid #41ADDD;
-  color: #41ADDD;
+  color: ${props => props.theme.primary};
 
-  &:active {
-    background: #41ADDD;
-    color: #FFF;
+  &:hover,:active {
+    background: ${props => props.theme.primary};
+    color: ${props => props.theme.bg};
+    text-decoration: none;
   }
 `;
