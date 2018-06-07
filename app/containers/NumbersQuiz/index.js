@@ -55,7 +55,8 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
     let newNum = String(Math.floor(Math.random() * 10 * this.state.numDigits));
     console.log('updateNumVal, newNum:', newNum);
     this.setState({
-      numVal: newNum
+      numVal: newNum,
+      guessVal: ''
     }, callback);
   }
 
@@ -83,7 +84,7 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
     if(this.state.guessVal == this.state.numVal){
       console.log("Correct");
       //this.clearGuess();
-      this.clearGuess(this.updateNumVal(this.speakNumber));
+      this.updateNumVal(this.speakNumber);
     } else {
       console.log("Incorrect");
     }

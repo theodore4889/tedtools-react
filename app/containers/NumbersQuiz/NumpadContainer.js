@@ -22,7 +22,7 @@ const NumberInput = styled.input.attrs({
 `;
 
 const NumpadRow = styled.div`
-  padding: 3px;
+
 `;
 
 const NumpadButton = styled.button`
@@ -31,6 +31,7 @@ const NumpadButton = styled.button`
   padding: 8px;
   border-radius: 20%;
   font-size: 35px;
+  margin: 3px;
 `;
 
 export default class NumpadWrapper extends Component {
