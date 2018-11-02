@@ -6,13 +6,13 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  startProjectHeader: {
-    id: 'tedtools.containers.HomePage.start_project.header',
-    defaultMessage: 'Welcome',
+  greeting: {
+    id: 'tedtools.containers.HomePage.greeting',
+    defaultMessage: 'Hello.',
   },
-  startProjectMessage: {
-    id: 'tedtools.containers.HomePage.start_project.message',
-    defaultMessage: 'A highly scalable, offline-first foundation with the best DX and a focus on performance and best practices',
+  mainQuestion: {
+    id: 'tedtools.containers.HomePage.questions.main',
+    defaultMessage: 'How may I help you?',
   },
   trymeHeader: {
     id: 'tedtools.containers.HomePage.tryme.header',

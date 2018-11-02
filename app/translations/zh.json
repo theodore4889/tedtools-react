@@ -1,7 +1,7 @@
 {
   "boilerplate.containers.LocaleToggle.en": "",
   "boilerplate.containers.LocaleToggle.zh-CN": "",
-  "boilerplate.containers.NotFoundPage.header": "Seite nicht gefunden.",
+  "boilerplate.containers.NotFoundPage.header": "",
   "tedtools.components.Footer.author.message": "",
   "tedtools.components.Footer.license.message": "",
   "tedtools.components.Header.captionMaker": "",

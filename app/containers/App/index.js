@@ -34,11 +34,13 @@ const AppWrapper = styled.div`
 `;
 
 const BodyWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
-  padding: 0 16px;
+  width: 100%;
   display: flex;
   margin: 0 auto;
+  background-color: #FFF;
 `;
+//  padding: 0 16px;
+//  max-width: calc(768px + 16px * 2);
 
 export default function App() {
   return (

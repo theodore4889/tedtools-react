@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import Wrapper from './Wrapper';
 import A from './A';
 import Img from './Img';
 import NavBar from './NavBar';
@@ -11,7 +12,7 @@ import messages from './messages';
 class Header extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
-      <div>
+      <Wrapper>
         <NavBar>
           <A href="/">
             <Img src={Logo} alt="Ted Tools - Logo" />
@@ -32,7 +33,7 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
             <FormattedMessage {...messages.features} />
           </HeaderLink>
         </NavBar>
-      </div>
+      </Wrapper>
     );
   }
 }

@@ -11,25 +11,61 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import { Container, Row, Col, Jumbotron } from 'reactstrap';
+import styled from 'styled-components';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
-import H2 from 'components/H2';
-import Img from 'components/Img';
-//import MainPhoto from './middelfart.jpg';
+import H1 from 'components/H1';
+import WallpaperPhoto from 'images/nyc.jpg';
+
 import ReposList from 'components/ReposList';
 import AtPrefix from './AtPrefix';
 import CenteredSection from './CenteredSection';
+import Img from './Img';
 import Form from './Form';
 import Input from './Input';
 import Section from './Section';
+//import Greeting from './Greeting';
 import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+
+const ContentWrapper = styled.div`
+  min-height: calc(100vh - 55px - 30px);
+  transition: all .5s ease-out;
+`;
+
+const Content = styled.div`
+  min-width: 67%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  justify-content: center;
+`;
+
+const Wallpaper = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background: ${props => `url(${props.src})`};
+  background-color: black; /* fallback color */
+  background-position: center;
+  background-size: cover;
+`;
+
+const Greeting = styled.div`
+  background-color: rgb(50,50,50,0.5);
+  min-width: 100%;
+  padding: 5em;
+  color: #FFF;
+  border-radius: 10px;
+`;
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   /**
@@ -50,44 +86,26 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     };
 
     return (
-      <article>
+      <div>
         <Helmet>
           <title>Home</title>
           <meta name="description" content="Home Page of Ted Lano" />
         </Helmet>
-        <div>
-          <CenteredSection>
-            <H2>
-              <FormattedMessage {...messages.startProjectHeader} />
-            </H2>
-            <p>
-              <FormattedMessage {...messages.startProjectMessage} />
-            </p>
-          </CenteredSection>
 
-          <Section>
-            <H2>
-              <FormattedMessage {...messages.trymeHeader} />
-            </H2>
-            <Form onSubmit={this.props.onSubmitForm}>
-              <label htmlFor="username">
-                <FormattedMessage {...messages.trymeMessage} />
-                <AtPrefix>
-                  <FormattedMessage {...messages.trymeAtPrefix} />
-                </AtPrefix>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="mxstbr"
-                  value={this.props.username}
-                  onChange={this.props.onChangeUsername}
-                />
-              </label>
-            </Form>
-            <ReposList {...reposListProps} />
-          </Section>
-        </div>
-      </article>
+        <Wallpaper src={WallpaperPhoto}/>
+        <Content>
+          <Container fluid>
+            <Row>
+              <Col>
+                <Greeting>
+                  <h1 className="display-3"><FormattedMessage {...messages.greeting} /></h1>
+                  <p className="lead"><FormattedMessage {...messages.mainQuestion} /></p>
+                </Greeting>
+              </Col>
+            </Row>
+          </Container>
+        </Content>
+      </div>
     );
   }
 }
