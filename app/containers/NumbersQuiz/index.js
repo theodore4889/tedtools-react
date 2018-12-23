@@ -6,6 +6,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
+import styled from 'styled-components';
 
 import H1 from 'components/H1';
 import SoundButton from './SoundButton';
@@ -17,15 +18,21 @@ import LanguageDropdown from './LanguageDropdown';
 import ResponsiveVoice from './ResponsiveVoice';
 import messages from './messages';
 
+const Wrapper = styled.div`
+  text-align: center;
+  margin: 0 auto;
+`;
+
 export default class NumbersQuiz extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props){
     console.log('[START] NumbersQuiz Constructor');
     super(props);
     this.state = {
-      numVal: '0',
+      numVal: 0,
       guessVal: '',
       language: 'Chinese Female',
-      numDigits: 3
+      numDigits: 3,
+      inputBgColor: '#00000000'
     }
 
     this.updateNumVal = this.updateNumVal.bind(this);
@@ -34,9 +41,10 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
     this.updateNumDigits = this.updateNumDigits.bind(this);
 
     this.submitValue = this.submitValue.bind(this);
-    this.clearGuess = this.clearGuess.bind(this);
+    this.updateInputBgColor = this.updateInputBgColor.bind(this);
 
     this.speakNumber = this.speakNumber.bind(this);
+    this.showAnswer = this.showAnswer.bind(this);
     console.log('[END] NumbersQuiz Constructor');
   }
 
@@ -52,7 +60,7 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
   }
 
   updateNumVal(callback){
-    let newNum = String(Math.floor(Math.random() * 10 * this.state.numDigits));
+    let newNum = Math.floor(Math.random() * Math.pow(10, this.state.numDigits));
     console.log('updateNumVal, newNum:', newNum);
     this.setState({
       numVal: newNum,
@@ -69,41 +77,61 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
   updateLanguage(val){
     this.setState({
       language: val
-    });
+    }, this.speakNumber);
   }
 
   updateNumDigits(val){
     console.log('updateNumDigits, val:', val);
     this.setState({
       numDigits: val
-    })
-    this.updateNumVal();
+    }, () => {
+      this.updateNumVal(this.speakNumber);
+    });
   }
 
   submitValue(){
     if(this.state.guessVal == this.state.numVal){
       console.log("Correct");
-      //this.clearGuess();
-      this.updateNumVal(this.speakNumber);
+      this.updateInputBgColor('#07db00'); //green
+
+      setTimeout( function() {
+        this.updateNumVal(this.speakNumber);
+        this.updateInputBgColor('#00000000');
+      }.bind(this), 2000);
+
     } else {
       console.log("Incorrect");
+      this.updateInputBgColor('#ff0033'); //red
+      setTimeout( function() {
+        this.speakNumber();
+        this.updateInputBgColor('#00000000');
+      }.bind(this), 2000);
     }
   }
 
-  clearGuess(callback){
+  updateInputBgColor(color, callback){
     this.setState({
-      guessVal: ''
+      inputBgColor: color,
     }, callback);
   }
 
   speakNumber(){
-    console.log('speakNumber, numVal:', this.state.numVal, ', language:', this.state.language);
-    responsiveVoice.speak(this.state.numVal, this.state.language);
+    console.log('speakNumber, numVal:', String(this.state.numVal), ', language:', this.state.language);
+    responsiveVoice.speak(String(this.state.numVal), this.state.language);
+  }
+
+  showAnswer(){
+    this.updateInputBgColor('#ff0033'); //red
+    this.updateGuessVal(this.state.numVal);
+    setTimeout( function() {
+      this.updateInputBgColor('#00000000');
+      this.updateNumVal(this.speakNumber);
+    }.bind(this), 2000);
   }
 
   render() {
     return (
-      <div>
+      <Wrapper>
         <Helmet>
           <title>Numbers Quiz</title>
           <meta name="description" content="Feature page of React.js Boilerplate application" />
@@ -118,12 +146,12 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
 		      <span className="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
 	      </SoundButton>
         &nbsp;&nbsp;
-        <AnswerButton id="answer-button" className="btn btn-danger" data-toggle="tooltip" data-placement="right" title="Show Answer">
+        <AnswerButton id="answer-button" className="btn btn-danger" data-toggle="tooltip" data-placement="right" title="Show Answer" onClick={this.showAnswer}>
           <b>?</b>
         </AnswerButton>
         <br/><br/>
 
-        <NumberInput numVal={this.state.guessVal}/>
+        <NumberInput numVal={this.state.guessVal} backgroundColor={this.state.inputBgColor}/>
         <NumpadContainer numVal={this.state.guessVal} updateVal={this.updateGuessVal} submitVal={this.submitValue}/>
         <br/>
 
@@ -132,12 +160,13 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
           <br/>
           <LanguageDropdown selected={this.state.language} updateVal={this.updateLanguage}/>
         </div>
+        <br/><br/>
 
         <div id="attributions">
           <ResponsiveVoice />
         </div>
 
-      </div>
+      </Wrapper>
     );
   }
 }

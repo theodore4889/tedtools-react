@@ -41,28 +41,43 @@ export default class NumpadWrapper extends Component {
       numVal: this.props.numVal
     };
 
+    this.updateVal = this.updateVal.bind(this);
     this.addDigit = this.addDigit.bind(this);
     this.subDigit = this.subDigit.bind(this);
-    //this.submitValue = this.submitValue.bind(this);
-    //this.clearGuess = this.clearGuess.bind(this);
   }
+
+  componentDidUpdate() {
+    // console.log('NumpadContainer componentDidUpdate ');
+    // console.log("prop", this.props.numVal, " state", this.state.numVal);
+    if (this.props.numVal !== this.state.numVal) {
+      this.state = {
+        numVal: this.props.numVal
+      };
+    }
+  }
+
+  updateVal(val){
+    this.setState({
+      numVal: val
+    }, this.props.updateVal(val)
+  )};
 
   addDigit(val){
-    this.state.numVal+= val;
-    this.props.updateVal(this.state.numVal);
-  }
+    let newVal = this.state.numVal + val;
+    this.updateVal(newVal);
+  };
 
   subDigit(){
-    this.state.numVal = this.state.numVal.slice(0, -1);
-    this.props.updateVal(this.state.numVal);
-  }
+    let newVal = this.props.numVal.slice(0, -1);
+    this.updateVal(newVal);
+  };
 
   render(){
         //console.log('NumpadContainer.js', 'render()', 'NumVal', this.state.numVal);
     return(
       <NumpadContainer>
         <NumpadRow>
-          <NumpadButton value="1" className="btn btn-default" onClick={() => this.addDigit(1)}>1</NumpadButton>
+          <NumpadButton className="btn btn-default" onClick={() => this.addDigit(1)}>1</NumpadButton>
           <NumpadButton className="btn btn-default" onClick={() => this.addDigit(2)}>2</NumpadButton>
           <NumpadButton className="btn btn-default" onClick={() => this.addDigit(3)}>3</NumpadButton>
         </NumpadRow>
@@ -80,7 +95,7 @@ export default class NumpadWrapper extends Component {
     			<NumpadButton className="btn btn-danger" onClick={() => this.subDigit()}>
     				<span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
     			</NumpadButton>
-          <NumpadButton className="btn btn-default" onClick={() => this.addDigit('0')}>0</NumpadButton>
+          <NumpadButton className="btn btn-default" onClick={() => this.addDigit(0)}>0</NumpadButton>
           <NumpadButton className="btn btn-success" onClick={() => this.props.submitVal()}>
     				<span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
     			</NumpadButton>

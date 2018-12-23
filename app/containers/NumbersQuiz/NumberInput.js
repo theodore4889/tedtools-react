@@ -24,10 +24,24 @@ const NumberInputWrapper = styled.div`
 `;
 
 export default class NumberInput extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      backgroundColor: this.props.backgroundColor
+    };
+  }
+
   render(){
+    // Update background color
+    if (this.props.backgroundColor !== this.state.backgroundColor) {
+      this.state = {
+        backgroundColor: this.props.backgroundColor
+      };
+    }
+
     return (
       <NumberInputWrapper>
-        <input
+        <input style={{backgroundColor: this.state.backgroundColor}}
           type="number"
           value={this.props.numVal}/>
       </NumberInputWrapper>

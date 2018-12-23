@@ -16,7 +16,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import FontFaceObserver from 'fontfaceobserver';
 import createHistory from 'history/createBrowserHistory';
 import 'sanitize.css/sanitize.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Import root app
 import App from 'containers/App';
@@ -40,6 +40,7 @@ import '!file-loader?name=[name].[ext]!./images/icon-384x384.png';
 import '!file-loader?name=[name].[ext]!./images/icon-512x512.png';
 import '!file-loader?name=[name].[ext]!./manifest.json';
 import 'file-loader?name=[name].[ext]!./.htaccess'; // eslint-disable-line import/extensions
+import '!!style-loader!css-loader!../vendor/css/bootstrap.min.css';
 /* eslint-enable import/no-webpack-loader-syntax */
 
 import configureStore from './configureStore';
@@ -49,7 +50,6 @@ import { translationMessages } from './i18n';
 
 // Import CSS reset and Global Styles
 import './global-styles';
-import '!!style-loader!css-loader!../vendor/css/bootstrap.min.css';
 
 // Observe loading of Open Sans (to remove open sans, remove the <link> tag in
 // the index.html file and this observer)
@@ -68,7 +68,7 @@ const history = createHistory();
 const store = configureStore(initialState, history);
 const MOUNT_NODE = document.getElementById('app');
 
-const render = (messages) => {
+const render = messages => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
@@ -93,7 +93,7 @@ if (module.hot) {
 
 // Chunked polyfill for browsers without Intl support
 if (!window.Intl) {
-  (new Promise((resolve) => {
+  (new Promise(resolve => {
     resolve(import('intl'));
   }))
     .then(() => Promise.all([
@@ -102,7 +102,7 @@ if (!window.Intl) {
       import('intl/locale-data/jsonp/zh.js'),
     ]))
     .then(() => render(translationMessages))
-    .catch((err) => {
+    .catch(err => {
       throw err;
     });
 } else {

@@ -9,4 +9,4 @@ const Img = styled.img`
   background-size: cover;
 `;
 
-export default Img
+export default Img;

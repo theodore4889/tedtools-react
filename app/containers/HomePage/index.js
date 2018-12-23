@@ -11,41 +11,36 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { Container, Row, Col, Jumbotron } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import styled from 'styled-components';
+//import posed from 'react-pose';
+import Typed from 'typed.js';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
-import H1 from 'components/H1';
+// import H1 from 'components/H1';
 import WallpaperPhoto from 'images/nyc.jpg';
 
-import ReposList from 'components/ReposList';
-import AtPrefix from './AtPrefix';
-import CenteredSection from './CenteredSection';
-import Img from './Img';
-import Form from './Form';
-import Input from './Input';
-import Section from './Section';
-//import Greeting from './Greeting';
+// import Greeting from './Greeting';
+import H1 from './H1.js';
 import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import ChatboxMessages from './ChatboxMessages';
 
-const ContentWrapper = styled.div`
-  min-height: calc(100vh - 55px - 30px);
-  transition: all .5s ease-out;
-`;
-
-const Content = styled.div`
+const ChatboxContainer = styled.div`
+  background-color: rgb(50,50,50,0.7);
   min-width: 67%;
   margin: 0;
   position: absolute;
   top: 50%;
   left: 50%;
+  padding: 3em;
+  border-radius: 10px;
   transform: translate(-50%, -50%);
   justify-content: center;
 `;
@@ -60,31 +55,70 @@ const Wallpaper = styled.div`
 `;
 
 const Greeting = styled.div`
-  background-color: rgb(50,50,50,0.5);
   min-width: 100%;
-  padding: 5em;
   color: #FFF;
-  border-radius: 10px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  border: solid 3px #FFF;
+  border-radius: 5px;
+  background-color: rbga(0,0,0,0.5);
+  color: #FFF;
+  font-size: 2em;
+  padding: 0.3em;
 `;
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  /**
-   * when initial state username is not null, submit the form to load repos
-   */
+  constructor(props){
+    super(props);
+    this.state = {
+      activeMessage: '...',
+      messages: []
+    }
+
+    this.submitResponse = this.submitResponse.bind(this);
+  }
+
   componentDidMount() {
-    if (this.props.username && this.props.username.trim().length > 0) {
-      this.props.onSubmitForm();
+
+    const options = {
+      strings: ['Hello. How can I help you?'],
+      typeSpeed: 40
+    };
+
+    // this.el refers to the <span> in the render() method
+    this.typed = new Typed(this.el, options);
+  }
+
+  componentWillUnmount() {
+    // Make sure to destroy Typed instance on unmounting to prevent memory leaks
+    this.typed.destroy();
+  }
+
+  submitResponse(e){
+    if (e.key === 'Enter') {
+      let key = Math.random().toString(36).substr(2, 9);
+      this.setState(prevState => ({
+        messages:[...prevState.messages, {'key': key, 'type': 'bot', 'message': this.state.activeMessage}],
+      }), this.typed.reset(self));
+
+      console.log('messages',this.state.messages);
+
+      // this.el refers to the <span> in the render() method
+
+      /*
+      const options = {
+        strings: ['...'],
+        typeSpeed: 40
+      };
+
+      this.typed = new Typed(this.el, options);
+      */
     }
   }
 
   render() {
-    const { loading, error, repos } = this.props;
-    const reposListProps = {
-      loading,
-      error,
-      repos,
-    };
-
     return (
       <div>
         <Helmet>
@@ -92,43 +126,35 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
           <meta name="description" content="Home Page of Ted Lano" />
         </Helmet>
 
-        <Wallpaper src={WallpaperPhoto}/>
-        <Content>
-          <Container fluid>
-            <Row>
-              <Col>
-                <Greeting>
-                  <h1 className="display-3"><FormattedMessage {...messages.greeting} /></h1>
-                  <p className="lead"><FormattedMessage {...messages.mainQuestion} /></p>
-                </Greeting>
-              </Col>
-            </Row>
-          </Container>
-        </Content>
+        <Wallpaper src={WallpaperPhoto} />
+
+        <ChatboxContainer>
+          <ChatboxMessages messages={this.state.messages}/>
+          <Greeting>
+            <H1 className="display-3">
+            <div className="type-wrap">
+              <span style={{ whiteSpace: 'pre' }} ref={(el) => { this.el = el; }} />
+            </div>
+            </H1>
+          </Greeting>
+          <Input type="text" placeholder="Enter your response here..." onKeyPress={this.submitResponse} autoFocus/>
+        </ChatboxContainer>
       </div>
     );
   }
 }
 
+// <p className="lead"><FormattedMessage {...messages.mainQuestion} /></p>
+
 HomePage.propTypes = {
-  loading: PropTypes.bool,
-  error: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.bool,
-  ]),
-  repos: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-  ]),
   onSubmitForm: PropTypes.func,
   username: PropTypes.string,
-  onChangeUsername: PropTypes.func,
 };
 
 export function mapDispatchToProps(dispatch) {
   return {
-    onChangeUsername: (evt) => dispatch(changeUsername(evt.target.value)),
-    onSubmitForm: (evt) => {
+    onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
+    onSubmitForm: evt => {
       if (evt !== undefined && evt.preventDefault) evt.preventDefault();
       dispatch(loadRepos());
     },
@@ -143,7 +169,6 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
 const withReducer = injectReducer({ key: 'home', reducer });
 const withSaga = injectSaga({ key: 'home', saga });
 
