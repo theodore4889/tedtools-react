@@ -1,24 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const NumpadContainer = styled.div`
   padding: 3px;
-`;
-
-const NumberInput = styled.input.attrs({
-  type: 'number',
-})`
-  height: 80px;
-  width: 260px;
-  font-size: 60px;
-  border-radius: 30px;
-  text-align: center;
-  border: 1px solid;
-  margin: 0px;
-  transition: all .25s ease-in-out;
-    -webkit-transition: all .25s ease-in-out;
-    -moz-transition: all .25s ease-in-out;
-    -o-transition: all .25s ease-in-out;
 `;
 
 const NumpadRow = styled.div`
@@ -34,11 +19,11 @@ const NumpadButton = styled.button`
   margin: 3px;
 `;
 
-export default class NumpadWrapper extends Component {
-  constructor(props){
+export class NumpadWrapper extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      numVal: this.props.numVal
+      numVal: this.props.numVal,
     };
 
     this.updateVal = this.updateVal.bind(this);
@@ -51,30 +36,30 @@ export default class NumpadWrapper extends Component {
     // console.log("prop", this.props.numVal, " state", this.state.numVal);
     if (this.props.numVal !== this.state.numVal) {
       this.state = {
-        numVal: this.props.numVal
+        numVal: this.props.numVal,
       };
     }
   }
 
-  updateVal(val){
+  updateVal(val) {
     this.setState({
-      numVal: val
-    }, this.props.updateVal(val)
-  )};
+      numVal: val,
+    }, this.props.updateVal(val));
+  }
 
-  addDigit(val){
-    let newVal = this.state.numVal + val;
+  addDigit(val) {
+    const newVal = this.state.numVal + val;
     this.updateVal(newVal);
-  };
+  }
 
-  subDigit(){
-    let newVal = this.props.numVal.slice(0, -1);
+  subDigit() {
+    const newVal = this.props.numVal.slice(0, -1);
     this.updateVal(newVal);
-  };
+  }
 
-  render(){
-        //console.log('NumpadContainer.js', 'render()', 'NumVal', this.state.numVal);
-    return(
+  render() {
+        // console.log('NumpadContainer.js', 'render()', 'NumVal', this.state.numVal);
+    return (
       <NumpadContainer>
         <NumpadRow>
           <NumpadButton className="btn btn-default" onClick={() => this.addDigit(1)}>1</NumpadButton>
@@ -92,15 +77,23 @@ export default class NumpadWrapper extends Component {
           <NumpadButton className="btn btn-default" onClick={() => this.addDigit(9)}>9</NumpadButton>
         </NumpadRow>
         <NumpadRow>
-    			<NumpadButton className="btn btn-danger" onClick={() => this.subDigit()}>
-    				<span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
-    			</NumpadButton>
+          <NumpadButton className="btn btn-danger" onClick={() => this.subDigit()}>
+            <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+          </NumpadButton>
           <NumpadButton className="btn btn-default" onClick={() => this.addDigit(0)}>0</NumpadButton>
           <NumpadButton className="btn btn-success" onClick={() => this.props.submitVal()}>
-    				<span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
-    			</NumpadButton>
+            <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
+          </NumpadButton>
         </NumpadRow>
       </NumpadContainer>
     );
   }
 }
+
+NumpadWrapper.propTypes = {
+  numVal: PropTypes.string,
+  updateVal: PropTypes.func,
+  submitVal: PropTypes.func,
+};
+
+export default NumpadWrapper;

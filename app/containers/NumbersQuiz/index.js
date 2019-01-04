@@ -24,7 +24,7 @@ const Wrapper = styled.div`
 `;
 
 export default class NumbersQuiz extends React.Component { // eslint-disable-line react/prefer-stateless-function
-  constructor(props){
+  constructor(props) {
     console.log('[START] NumbersQuiz Constructor');
     super(props);
     this.state = {
@@ -32,8 +32,8 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
       guessVal: '',
       language: 'Chinese Female',
       numDigits: 3,
-      inputBgColor: '#00000000'
-    }
+      inputBgColor: '#00000000',
+    };
 
     this.updateNumVal = this.updateNumVal.bind(this);
     this.updateGuessVal = this.updateGuessVal.bind(this);
@@ -48,85 +48,85 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
     console.log('[END] NumbersQuiz Constructor');
   }
 
-  componentDidMount(){
+  componentDidMount() {
     console.log('NumbersQuiz Component Did Mount');
     this.updateNumVal();
 
-    const script = document.createElement("script");
-    script.src = "https://code.responsivevoice.org/responsivevoice.js";
+    // Load ResponsiveVoice JS
+    const script = document.createElement('script');
+    script.src = 'https://code.responsivevoice.org/responsivevoice.js';
     script.async = true;
     script.onload = this.speakNumber;
     document.body.appendChild(script);
   }
 
-  updateNumVal(callback){
-    let newNum = Math.floor(Math.random() * Math.pow(10, this.state.numDigits));
+  updateNumVal(callback) {
+    const newNum = Math.floor(Math.random() * (10 ** this.state.numDigits));
     console.log('updateNumVal, newNum:', newNum);
     this.setState({
       numVal: newNum,
-      guessVal: ''
+      guessVal: '',
     }, callback);
   }
 
-  updateGuessVal(val){
+  updateGuessVal(val) {
     this.setState({
-      guessVal: val
-    })
+      guessVal: val,
+    });
   }
 
-  updateLanguage(val){
+  updateLanguage(val) {
     this.setState({
-      language: val
+      language: val,
     }, this.speakNumber);
   }
 
-  updateNumDigits(val){
+  updateNumDigits(val) {
     console.log('updateNumDigits, val:', val);
     this.setState({
-      numDigits: val
+      numDigits: val,
     }, () => {
       this.updateNumVal(this.speakNumber);
     });
   }
 
-  submitValue(){
-    if(this.state.guessVal == this.state.numVal){
-      console.log("Correct");
-      this.updateInputBgColor('#07db00'); //green
+  submitValue() {
+    if (this.state.guessVal === String(this.state.numVal)) {
+      console.log('Correct');
+      this.updateInputBgColor('#07db00'); // green
 
-      setTimeout( function() {
+      setTimeout(() => {
         this.updateNumVal(this.speakNumber);
         this.updateInputBgColor('#00000000');
-      }.bind(this), 2000);
-
+      }, 2000);
     } else {
-      console.log("Incorrect");
-      this.updateInputBgColor('#ff0033'); //red
-      setTimeout( function() {
+      console.log('Incorrect');
+      this.updateInputBgColor('#ff0033'); // red
+      setTimeout(() => {
         this.speakNumber();
         this.updateInputBgColor('#00000000');
-      }.bind(this), 2000);
+      }, 2000);
     }
   }
 
-  updateInputBgColor(color, callback){
+  updateInputBgColor(color, callback) {
     this.setState({
       inputBgColor: color,
     }, callback);
   }
 
-  speakNumber(){
+  speakNumber() {
     console.log('speakNumber, numVal:', String(this.state.numVal), ', language:', this.state.language);
     responsiveVoice.speak(String(this.state.numVal), this.state.language);
   }
 
-  showAnswer(){
-    this.updateInputBgColor('#ff0033'); //red
+  showAnswer() {
+    this.updateInputBgColor('#ff0033'); // red
     this.updateGuessVal(this.state.numVal);
-    setTimeout( function() {
+    setTimeout(() => {
       this.updateInputBgColor('#00000000');
       this.updateNumVal(this.speakNumber);
-    }.bind(this), 2000);
+    }, 2000);
   }
 
   render() {
@@ -142,25 +142,25 @@ export default class NumbersQuiz extends React.Component { // eslint-disable-lin
 
         <audio id="num-audio" type="audio/mpeg"></audio>
 
-	      <SoundButton id="sound-button" className="btn btn-primary" data-toggle="tooltip" data-placement="left" title="Play Sound" onClick={this.speakNumber}>
-		      <span className="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-	      </SoundButton>
+        <SoundButton id="sound-button" className="btn btn-primary" data-toggle="tooltip" data-placement="left" title="Play Sound" onClick={this.speakNumber}>
+          <span className="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+        </SoundButton>
         &nbsp;&nbsp;
         <AnswerButton id="answer-button" className="btn btn-danger" data-toggle="tooltip" data-placement="right" title="Show Answer" onClick={this.showAnswer}>
           <b>?</b>
         </AnswerButton>
-        <br/><br/>
+        <br /><br />
 
-        <NumberInput numVal={this.state.guessVal} backgroundColor={this.state.inputBgColor}/>
-        <NumpadContainer numVal={this.state.guessVal} updateVal={this.updateGuessVal} submitVal={this.submitValue}/>
-        <br/>
+        <NumberInput numVal={this.state.guessVal} backgroundColor={this.state.inputBgColor} />
+        <NumpadContainer numVal={this.state.guessVal} updateVal={this.updateGuessVal} submitVal={this.submitValue} />
+        <br />
 
         <div id="settings">
-          <DigitButtons updateVal={this.updateNumDigits}/>
-          <br/>
-          <LanguageDropdown selected={this.state.language} updateVal={this.updateLanguage}/>
+          <DigitButtons updateVal={this.updateNumDigits} />
+          <br />
+          <LanguageDropdown selected={this.state.language} updateVal={this.updateLanguage} />
         </div>
-        <br/><br/>
+        <br /><br />
 
         <div id="attributions">
           <ResponsiveVoice />

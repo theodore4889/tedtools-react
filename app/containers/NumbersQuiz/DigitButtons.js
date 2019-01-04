@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-export default class DigitButtons extends Component {
-  constructor(props){
+export class DigitButtons extends Component {
+  constructor(props) {
     super(props);
     this.state = {};
 
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(val){
+  handleChange(val) {
     this.props.updateVal(val);
   }
 
-  render(){
+  render() {
     return (
       <div>
         <p><b>Number of Digits</b></p>
@@ -31,3 +32,9 @@ export default class DigitButtons extends Component {
     );
   }
 }
+
+DigitButtons.propTypes = {
+  updateVal: PropTypes.func,
+};
+
+export default DigitButtons;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const NumberInputWrapper = styled.div`
@@ -23,28 +24,37 @@ const NumberInputWrapper = styled.div`
   }
 `;
 
-export default class NumberInput extends Component {
-  constructor(props){
+export class NumberInput extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      backgroundColor: this.props.backgroundColor
+      backgroundColor: this.props.backgroundColor,
     };
   }
 
-  render(){
+  render() {
     // Update background color
     if (this.props.backgroundColor !== this.state.backgroundColor) {
       this.state = {
-        backgroundColor: this.props.backgroundColor
+        backgroundColor: this.props.backgroundColor,
       };
     }
 
     return (
       <NumberInputWrapper>
-        <input style={{backgroundColor: this.state.backgroundColor}}
+        <input
+          style={{ backgroundColor: this.state.backgroundColor }}
           type="number"
-          value={this.props.numVal}/>
+          value={this.props.numVal}
+        />
       </NumberInputWrapper>
     );
   }
 }
+
+NumberInput.propTypes = {
+  backgroundColor: PropTypes.string,
+  numVal: PropTypes.string,
+};
+
+export default NumberInput;

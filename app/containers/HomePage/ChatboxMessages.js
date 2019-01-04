@@ -1,39 +1,47 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const ChatboxMessagesWrapper = styled.div`
 
 `;
 
-export default class ChatboxMessages extends Component {
-  constructor(props){
+export class ChatboxMessages extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      messages: this.props.messages
+      messages: this.props.messages,
     };
 
-    //this.addMessage = this.addMessage.bind(this);
+    // this.addMessage = this.addMessage.bind(this);
   }
 
-  render(){
+  render() {
     if (this.props.messages !== this.state.messages) {
+      // console.log("props:", this.props.messages)
       this.state = {
-        messages: this.props.messages
+        messages: this.props.messages,
       };
     }
 
     return (
-        <ChatboxMessagesWrapper>
-          <table>
-            <tbody>
-              {this.state.messages.map((r) => (
-                <tr key={r.key}>
-                    <td>{r.message}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </ChatboxMessagesWrapper>
+      <ChatboxMessagesWrapper>
+        <table>
+          <tbody>
+            {this.state.messages.map(msg => (
+              <tr key={msg.key}>
+                <td>{msg.message}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </ChatboxMessagesWrapper>
     );
   }
 }
+
+ChatboxMessages.propTypes = {
+  messages: PropTypes.array,
+};
+
+export default ChatboxMessages;

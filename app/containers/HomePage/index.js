@@ -3,18 +3,17 @@
  *
  * This is the first thing users see of our App, at the '/' route
  */
-
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+//import { render } from 'react-dom';
 import { Helmet } from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { Container, Row, Col } from 'reactstrap';
 import styled from 'styled-components';
-//import posed from 'react-pose';
-import Typed from 'typed.js';
+//import Typed from 'typed.js';
+//import Typed from 'react-typed';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -22,9 +21,8 @@ import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/
 // import H1 from 'components/H1';
 import WallpaperPhoto from 'images/nyc.jpg';
 
-// import Greeting from './Greeting';
-import H1 from './H1.js';
-import messages from './messages';
+import H1 from './H1';
+// import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
@@ -32,9 +30,91 @@ import reducer from './reducer';
 import saga from './saga';
 import ChatboxMessages from './ChatboxMessages';
 
+/**
+ * Instantiate the Watson Conversation Service
+ */
+
+// var AssistantV2 = require('watson-developer-cloud/assistant/v2'); // watson sdk
+var AssistantV1 = require('watson-developer-cloud/assistant/v1');
+
+/*
+var assistant = new AssistantV2({
+  version: process.env.WATSON_VERSION,
+  username: process.env.WATSON_USERNAME,
+  password: process.env.WATSON_API_KEY,
+  url: process.env.WATSON_ASSISTANT_BASE_URL,
+});
+*/
+
+/*
+var assistant = new AssistantV2({
+  version: process.env.WATSON_VERSION,
+  iam_apikey: process.env.WATSON_SERVICE_API_KEY,
+});
+*/
+/*
+var assistant = new AssistantV1({
+  version: process.env.WATSON_VERSION,
+  iam_apikey: process.env.WATSON_ASSISTANT_API_KEY,
+  url: process.env.WATSON_ASSISTANT_BASE_URL,
+});
+
+assistant.message({
+  workspace_id: process.env.WATSON_WORKSPACE_ID,
+  input: {'text': 'Hello'}
+},  function(err, response) {
+  if (err)
+    console.log('error:', err);
+  else
+    console.log(JSON.stringify(response, null, 2));
+});
+*/
+/*
+assistant.createSession({
+  assistant_id: process.env.WATSON_ASSISTANT_ID,
+}, function(err, response) {
+  if (err) {
+    console.error(err);
+  } else{
+    console.log(JSON.stringify(response, null, 2));
+  }
+});
+*/
+
+/*
+ var watson = require('watson-developer-cloud');
+
+ var service = new watson.AssistantV2({
+   iam_apikey: process.env.WATSON_PASSWORD,
+   version: process.env.WATSON_VERSION
+ });
+
+ service.createSession({
+   assistant_id: process.env.WATSON_ASSISTANT_ID,
+ }, function(err, response) {
+   if (err) {
+     console.error(err);
+   } else{
+     console.log(JSON.stringify(response, null, 2));
+   }
+ });
+ */
+
+
+const Wallpaper = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background: ${props => `url(${props.src})`};
+  background-color: black; /* fallback color */
+  background-position: center;
+  background-size: cover;
+`;
+
 const ChatboxContainer = styled.div`
+  display: block;
   background-color: rgb(50,50,50,0.7);
   min-width: 67%;
+  max-height: 80%;
   margin: 0;
   position: absolute;
   top: 50%;
@@ -45,14 +125,10 @@ const ChatboxContainer = styled.div`
   justify-content: center;
 `;
 
-const Wallpaper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: ${props => `url(${props.src})`};
-  background-color: black; /* fallback color */
-  background-position: center;
-  background-size: cover;
-`;
+const MessagesContainer = styled.div`
+  max-height: 290px;
+  overflow-y: scroll;
+`
 
 const Greeting = styled.div`
   min-width: 100%;
@@ -70,43 +146,79 @@ const Input = styled.input`
 `;
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  constructor(props){
+  constructor(props) {
     super(props);
+    let key = Math.random().toString(36).substr(2, 9);
     this.state = {
       activeMessage: '...',
-      messages: []
-    }
+      messages: [{ key: key, type: 'bot', message: 'Hello. How may I help you?' }],
+      inputValue: '',
+    };
 
     this.submitResponse = this.submitResponse.bind(this);
+    this.updateInputValue = this.updateInputValue.bind(this);
   }
 
   componentDidMount() {
 
+    axios.get(`/api/message`)
+         .then(function (response) {
+            console.log("/api/message response", response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+          console.log(process.env.WATSON_ASSISTANT_BASE_URL);
+    /*
     const options = {
       strings: ['Hello. How can I help you?'],
-      typeSpeed: 40
+      typeSpeed: 40,
     };
 
-    // this.el refers to the <span> in the render() method
     this.typed = new Typed(this.el, options);
+ /*
+    // this.el refers to the <span> in the render() method
+    this.typed = ('#typed',{
+      stringsElement: '#typed-strings',
+      typeSpeed: 40
+    });
+    */
   }
 
   componentWillUnmount() {
     // Make sure to destroy Typed instance on unmounting to prevent memory leaks
-    this.typed.destroy();
+    //this.typed.destroy();
   }
 
-  submitResponse(e){
+  updateInputValue(evt) {
+    this.setState({
+      inputValue: evt.target.value
+    });
+  }
+
+  submitResponse(e) {
     if (e.key === 'Enter') {
       let key = Math.random().toString(36).substr(2, 9);
       this.setState(prevState => ({
-        messages:[...prevState.messages, {'key': key, 'type': 'bot', 'message': this.state.activeMessage}],
-      }), this.typed.reset(self));
+        messages: [ ...prevState.messages, { key: key, type: 'user', message: this.state.inputValue } ],
+        inputValue: '',
+      }));
+      //}), this.typed.reset(self));
 
-      console.log('messages',this.state.messages);
+      // Set processing message
+
+      // Send message to Conversation Bot
+
+      const response = 'I am a robot';
+      let key2 = Math.random().toString(36).substr(2, 9);
+      this.setState(prevState => ({
+        messages: [...prevState.messages, { key: key2, type: 'bot', message: response }],
+      }));
+
+      console.log("messages", this.state.messages);
 
       // this.el refers to the <span> in the render() method
-
       /*
       const options = {
         strings: ['...'],
@@ -129,21 +241,32 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
         <Wallpaper src={WallpaperPhoto} />
 
         <ChatboxContainer>
-          <ChatboxMessages messages={this.state.messages}/>
-          <Greeting>
-            <H1 className="display-3">
-            <div className="type-wrap">
-              <span style={{ whiteSpace: 'pre' }} ref={(el) => { this.el = el; }} />
-            </div>
+          <MessagesContainer>
+            <H1>
+              <ChatboxMessages messages={this.state.messages} />
             </H1>
-          </Greeting>
-          <Input type="text" placeholder="Enter your response here..." onKeyPress={this.submitResponse} autoFocus/>
+          </MessagesContainer>
+
+          <Input
+            type="text"
+            placeholder="Enter your response here..."
+            onKeyPress={this.submitResponse}
+            value={this.state.inputValue}
+            onChange={evt => this.updateInputValue(evt)}
+            autoFocus
+          />
         </ChatboxContainer>
       </div>
     );
   }
 }
 
+/*
+<Typed
+  strings={['Hello. How may I help you?']}
+  typeSpeed={40}
+/>
+*/
 // <p className="lead"><FormattedMessage {...messages.mainQuestion} /></p>
 
 HomePage.propTypes = {

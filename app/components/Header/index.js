@@ -11,26 +11,26 @@ import messages from './messages';
 class Header extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
-        <NavBar>
-          <A href="/">
-            <Img src={Logo} alt="Ted Tools - Logo" />
-          </A>
-          <HeaderLink to="/">
-            <FormattedMessage {...messages.home} />
-          </HeaderLink>
-          <HeaderLink to="/caption-maker">
-            <FormattedMessage {...messages.captionMaker} />
-          </HeaderLink>
-          <HeaderLink to="/numbers-quiz">
-            <FormattedMessage {...messages.numbersQuiz} />
-          </HeaderLink>
-          <HeaderLink to="/ip-geolocator">
-            <FormattedMessage {...messages.features} />
-          </HeaderLink>
-          <HeaderLink to="/features">
-            <FormattedMessage {...messages.features} />
-          </HeaderLink>
-        </NavBar>
+      <NavBar>
+        <A href="/">
+          <Img src={Logo} alt="Ted Tools - Logo" />
+        </A>
+        <HeaderLink to="/">
+          <FormattedMessage {...messages.home} />
+        </HeaderLink>
+        <HeaderLink to="/caption-maker">
+          <FormattedMessage {...messages.captionMaker} />
+        </HeaderLink>
+        <HeaderLink to="/numbers-quiz">
+          <FormattedMessage {...messages.numbersQuiz} />
+        </HeaderLink>
+        <HeaderLink to="/ip-geolocator">
+          <FormattedMessage {...messages.features} />
+        </HeaderLink>
+        <HeaderLink to="/features">
+          <FormattedMessage {...messages.features} />
+        </HeaderLink>
+      </NavBar>
     );
   }
 }
