@@ -3,17 +3,17 @@
  *
  * This is the first thing users see of our App, at the '/' route
  */
-import React, {Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-//import { render } from 'react-dom';
+// import { render } from 'react-dom';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import styled from 'styled-components';
-//import Typed from 'typed.js';
-//import Typed from 'react-typed';
+// import Typed from 'typed.js';
+// import Typed from 'react-typed';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -35,7 +35,7 @@ import ChatboxMessages from './ChatboxMessages';
  */
 
 // var AssistantV2 = require('watson-developer-cloud/assistant/v2'); // watson sdk
-var AssistantV1 = require('watson-developer-cloud/assistant/v1');
+// let AssistantV1 = require('watson-developer-cloud/assistant/v1');
 
 /*
 var assistant = new AssistantV2({
@@ -45,61 +45,6 @@ var assistant = new AssistantV2({
   url: process.env.WATSON_ASSISTANT_BASE_URL,
 });
 */
-
-/*
-var assistant = new AssistantV2({
-  version: process.env.WATSON_VERSION,
-  iam_apikey: process.env.WATSON_SERVICE_API_KEY,
-});
-*/
-/*
-var assistant = new AssistantV1({
-  version: process.env.WATSON_VERSION,
-  iam_apikey: process.env.WATSON_ASSISTANT_API_KEY,
-  url: process.env.WATSON_ASSISTANT_BASE_URL,
-});
-
-assistant.message({
-  workspace_id: process.env.WATSON_WORKSPACE_ID,
-  input: {'text': 'Hello'}
-},  function(err, response) {
-  if (err)
-    console.log('error:', err);
-  else
-    console.log(JSON.stringify(response, null, 2));
-});
-*/
-/*
-assistant.createSession({
-  assistant_id: process.env.WATSON_ASSISTANT_ID,
-}, function(err, response) {
-  if (err) {
-    console.error(err);
-  } else{
-    console.log(JSON.stringify(response, null, 2));
-  }
-});
-*/
-
-/*
- var watson = require('watson-developer-cloud');
-
- var service = new watson.AssistantV2({
-   iam_apikey: process.env.WATSON_PASSWORD,
-   version: process.env.WATSON_VERSION
- });
-
- service.createSession({
-   assistant_id: process.env.WATSON_ASSISTANT_ID,
- }, function(err, response) {
-   if (err) {
-     console.error(err);
-   } else{
-     console.log(JSON.stringify(response, null, 2));
-   }
- });
- */
-
 
 const Wallpaper = styled.div`
   width: 100vw;
@@ -128,11 +73,6 @@ const ChatboxContainer = styled.div`
 const MessagesContainer = styled.div`
   max-height: 290px;
   overflow-y: scroll;
-`
-
-const Greeting = styled.div`
-  min-width: 100%;
-  color: #FFF;
 `;
 
 const Input = styled.input`
@@ -145,31 +85,36 @@ const Input = styled.input`
   padding: 0.3em;
 `;
 
+let sessionId = {};
+
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
     super(props);
-    let key = Math.random().toString(36).substr(2, 9);
+
     this.state = {
       activeMessage: '...',
-      messages: [{ key: key, type: 'bot', message: 'Hello. How may I help you?' }],
+      messages: [],
       inputValue: '',
     };
 
     this.submitResponse = this.submitResponse.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
+    this.messageAssistant = this.messageAssistant.bind(this);
+    this.addMessageToState = this.addMessageToState.bind(this);
   }
 
   componentDidMount() {
+    //this.messageAssistant("Hello.");
 
-    axios.get(`/api/message`)
-         .then(function (response) {
-            console.log("/api/message response", response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+    axios.post('/api/watson/assistant/startSession', {})
+      .then( resp => {
+        sessionId = resp.data.session_id;
+        console.log('sessionId:', sessionId);
+      })
+      .catch( err => {
+        console.log(err);
+      });
 
-          console.log(process.env.WATSON_ASSISTANT_BASE_URL);
     /*
     const options = {
       strings: ['Hello. How can I help you?'],
@@ -188,35 +133,51 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 
   componentWillUnmount() {
     // Make sure to destroy Typed instance on unmounting to prevent memory leaks
-    //this.typed.destroy();
+    // this.typed.destroy();
   }
 
   updateInputValue(evt) {
     this.setState({
-      inputValue: evt.target.value
+      inputValue: evt.target.value,
     });
+  }
+
+  addMessageToState(message, type){
+    let key = Math.random().toString(36).substr(2, 9);
+    this.setState(prevState => ({
+      messages: [...prevState.messages, { key, type, message }],
+      inputValue: '',
+    }));
+  }
+
+  messageAssistant(message, callback){
+    axios.post('/api/watson/assistant/sendMessage', {
+        session_id: sessionId,
+        text: message,
+      })
+        .then( resp => {
+          console.log('/api/watson/assistant/sendMessage resp', resp);
+          const responseMsg = resp.data.output.generic[0].text;
+
+          this.addMessageToState(responseMsg, 'bot');
+          if(callback) callback();
+        })
+        .catch( err => {
+          console.log(err);
+        });
   }
 
   submitResponse(e) {
     if (e.key === 'Enter') {
-      let key = Math.random().toString(36).substr(2, 9);
-      this.setState(prevState => ({
-        messages: [ ...prevState.messages, { key: key, type: 'user', message: this.state.inputValue } ],
-        inputValue: '',
-      }));
-      //}), this.typed.reset(self));
+      const message = this.state.inputValue;
+      this.addMessageToState(message, 'user');
+
+      // }), this.typed.reset(self));
 
       // Set processing message
 
       // Send message to Conversation Bot
-
-      const response = 'I am a robot';
-      let key2 = Math.random().toString(36).substr(2, 9);
-      this.setState(prevState => ({
-        messages: [...prevState.messages, { key: key2, type: 'bot', message: response }],
-      }));
-
-      console.log("messages", this.state.messages);
+      this.messageAssistant(message);
 
       // this.el refers to the <span> in the render() method
       /*

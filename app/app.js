@@ -5,8 +5,6 @@
  * code.
  */
 
- console.log("app/app.js START");
-
 // Needed for redux-saga es6 generator support
 import 'babel-polyfill';
 
