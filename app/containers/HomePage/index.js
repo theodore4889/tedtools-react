@@ -104,31 +104,14 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
   }
 
   componentDidMount() {
-    //this.messageAssistant("Hello.");
-
     axios.post('/api/watson/assistant/startSession', {})
-      .then( resp => {
+      .then(resp => {
         sessionId = resp.data.session_id;
         console.log('sessionId:', sessionId);
       })
-      .catch( err => {
+      .catch(err => {
         console.log(err);
       });
-
-    /*
-    const options = {
-      strings: ['Hello. How can I help you?'],
-      typeSpeed: 40,
-    };
-
-    this.typed = new Typed(this.el, options);
- /*
-    // this.el refers to the <span> in the render() method
-    this.typed = ('#typed',{
-      stringsElement: '#typed-strings',
-      typeSpeed: 40
-    });
-    */
   }
 
   componentWillUnmount() {
@@ -142,29 +125,29 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     });
   }
 
-  addMessageToState(message, type){
-    let key = Math.random().toString(36).substr(2, 9);
+  addMessageToState(message, type) {
+    const key = Math.random().toString(36).substr(2, 9);
     this.setState(prevState => ({
       messages: [...prevState.messages, { key, type, message }],
       inputValue: '',
     }));
   }
 
-  messageAssistant(message, callback){
+  messageAssistant(message, callback) {
     axios.post('/api/watson/assistant/sendMessage', {
-        session_id: sessionId,
-        text: message,
-      })
-        .then( resp => {
-          console.log('/api/watson/assistant/sendMessage resp', resp);
-          const responseMsg = resp.data.output.generic[0].text;
+      session_id: sessionId,
+      text: message,
+    })
+      .then(resp => {
+        console.log('/api/watson/assistant/sendMessage resp', resp);
+        const responseMsg = resp.data.output.generic[0].text;
 
-          this.addMessageToState(responseMsg, 'bot');
-          if(callback) callback();
-        })
-        .catch( err => {
-          console.log(err);
-        });
+        this.addMessageToState(responseMsg, 'bot');
+        if (callback) callback();
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   submitResponse(e) {

@@ -1,6 +1,7 @@
 /* eslint consistent-return:0 */
 const express = require('express');
 const axios = require('axios');
+const watson = require('watson-developer-cloud');
 const logger = require('./logger');
 require('dotenv').config();
 
@@ -11,10 +12,13 @@ const isDev = process.env.NODE_ENV !== 'production';
 const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false;
 const resolve = require('path').resolve;
 const app = express();
-var service;
-var sessionId;
 
 app.use(express.json());
+
+const service = new watson.AssistantV2({
+  iam_apikey: process.env.WATSON_API_KEY,
+  version: process.env.WATSON_ASSISTANT_VERSION,
+});
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -23,20 +27,13 @@ app.use(express.json());
 // API - Create Watson Assistant Session
 // *****************************************************************************
 app.post('/api/watson/assistant/startSession', (req, res) => {
-  var watson = require('watson-developer-cloud');
-
-  service = new watson.AssistantV2({
-    iam_apikey: process.env.WATSON_API_KEY,
-    version: process.env.WATSON_ASSISTANT_VERSION
-  });
-
   service.createSession({
     assistant_id: process.env.WATSON_ASSISTANT_ID,
-  }, function(err, response) {
+  }, (err, resp) => {
     if (err) {
       console.error(err);
-    } else{
-      res.send(JSON.stringify(response));
+    } else {
+      res.send(JSON.stringify(resp));
     }
   });
 });
@@ -62,29 +59,7 @@ app.post('/api/watson/assistant/sendMessage', (req, res) => {
       res.send(JSON.stringify(resp));
     }
   });
-  // console.log('/api/message res', res);
-
-  // axios
-  // .post(`${process.env.WATSON_ASSISTANT_BASE_URL}/v1/workspaces/${process.env.WATSON_WORKSPACE_ID}/message?version=${process.env.WATSON_ASSISTANT_VERSION}`,
-  //   req.body, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     auth: {
-  //       username: process.env.WATSON_ASSISTANT_USERNAME,
-  //       password: process.env.WATSON_API_KEY,
-  //     },
-  //   }).then(response => {
-  //     // console.log("/api/message response.data", response.data);
-  //     sessionId = response.data.sessionId;
-  //     res.send(JSON.stringify(response.data));
-  //   }).catch(err => {
-  //     console.log('Error:', err);
-  //   });
-
 });
-
-
 
 // In production we need to pass these values in instead of relying on webpack
 setup(app, {
