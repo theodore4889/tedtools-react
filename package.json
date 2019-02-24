@@ -1,16 +1,16 @@
 {
-  "name": "react-boilerplate",
-  "version": "3.5.0",
-  "description": "A highly scalable, offline-first foundation with the best DX and a focus on performance and best practices",
+  "name": "react-tedtools",
+  "version": "0.0.1",
+  "description": "TedTools built in React.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/react-boilerplate/react-boilerplate.git"
+    "url": "git://github.com/theolano/tedtools-react.git"
   },
   "engines": {
     "npm": ">=3",
     "node": ">=5"
   },
-  "author": "Max Stoiber",
+  "author": "Theodore Lano",
   "license": "MIT",
   "scripts": {
     "analyze:clean": "rimraf stats.json",
@@ -43,7 +43,9 @@
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "heroku-postbuild": "node ./internals/scripts/dependencies.js"
+    "heroku-postbuild": "node ./internals/scripts/dependencies.js",
+    "package": "webpack --config webpack.config.production.js --progress --colors",
+    "deploy": "npm run package"
   },
   "lint-staged": {
     "*.js": "lint:eslint"
