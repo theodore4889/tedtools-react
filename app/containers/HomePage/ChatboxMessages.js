@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import BotMessage from './BotMessage.js';
-import UserMessage from './UserMessage.js';
+import BotMessage from './BotMessage';
+import UserMessage from './UserMessage';
 
 const ChatboxMessagesWrapper = styled.div`
 `;
@@ -19,26 +19,26 @@ export class ChatboxMessages extends Component {
     this.scrollToBottom = this.scrollToBottom.bind(this);
   }
 
-  addMessage(msg){
-    if(msg.type === 'bot'){
-      return <BotMessage msg={msg}></BotMessage>
-    }
-
-    return (
-      <UserMessage msg={msg}></UserMessage>
-    )
-  }
-
-  scrollToBottom(){
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
-  }
-
   componentDidMount() {
     this.scrollToBottom();
   }
 
   componentDidUpdate() {
     this.scrollToBottom();
+  }
+
+  addMessage(msg) {
+    if (msg.type === 'bot') {
+      return <BotMessage key={msg.key} msg={msg}></BotMessage>;
+    }
+
+    return (
+      <UserMessage key={msg.key} msg={msg}></UserMessage>
+    );
+  }
+
+  scrollToBottom() {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
   }
 
   render() {
@@ -56,8 +56,10 @@ export class ChatboxMessages extends Component {
             this.addMessage(msg)
           ))}
         </div>
-        <div style={{ float:"left", clear: "both" }}
-          ref={(el) => { this.messagesEnd = el; }}>
+        <div
+          style={{ float: 'left', clear: 'both' }}
+          ref={el => { this.messagesEnd = el; }}
+        >
         </div>
       </ChatboxMessagesWrapper>
     );

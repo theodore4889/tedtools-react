@@ -22,7 +22,9 @@ import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/
 import WallpaperPhoto from 'images/nyc.jpg';
 
 import H1 from './H1';
+import A from './A';
 // import messages from './messages';
+
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
@@ -108,6 +110,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       .then(resp => {
         sessionId = resp.data.session_id;
         console.log('sessionId:', sessionId);
+        this.messageAssistant('Hello', 'user');
       })
       .catch(err => {
         console.log(err);
@@ -186,11 +189,9 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 
         <ChatboxContainer>
           <MessagesContainer>
-            <H1>
-              <ChatboxMessages messages={this.state.messages} />
-            </H1>
+            <ChatboxMessages messages={this.state.messages} />
           </MessagesContainer>
-
+          <br/>
           <Input
             type="text"
             placeholder="Enter your response here..."
